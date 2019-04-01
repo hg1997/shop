@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!--===============================-->
+
+     <class  name="edu.cqupt.ssh.domain.Product" table="product">
+         <!--主键-->
+         <id name="pid" column="pid">
+             <generator class="native"/>
+         </id>
+
+         <!--其他属性-->
+         <property name="pname"/>
+         <property name="market_price"/>
+         <property name="shop_price"/>
+         <property name="image"/>
+         <property name="pdesc"/>
+         <property name="is_hot"/>
+         <property name="pdate"/>
+
+         <!--多对一：商品和二级分类的对应-->
+         <many-to-one lazy="false" name="categorySecond" class="edu.cqupt.ssh.domain.CategorySecond" column="csid"/>
+
+         <!--一对多：一个商品对应多个订单项-->
+         <set name="orderItems">
+             <key column="pid"/>
+             <one-to-many class="edu.cqupt.ssh.domain.OrderItem"></one-to-many>
+         </set>
+     </class>
+    <!--===============================-->
+</hibernate-mapping>

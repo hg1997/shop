@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+		"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+		"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+	<struts>
+			<include file="test-struts.xml"/>
+
+		<package name="index" extends="struts-default" namespace="/">
+			<!--主页跳转的action-->
+			<action name="index" class="indexAction">
+				<result name="index">/WEB-INF/jsp/index.jsp</result>
+			</action>
+
+			<!--跳转到商品分页面-->
+			<action name="product_show" class="productAction" method="show">
+				<result name="show">/WEB-INF/jsp/product.jsp</result>
+			</action>
+			<!--根据一级分类显示商品-->
+			<action name="category" class="categoryAction">
+				<result name="findByCid">/WEB-INF/jsp/productList.jsp</result>
+				<!--<result name="toSecondCategory">/demo.jsp</result>-->
+			</action>
+			<!--根据二级分类显示商品-->
+			<action name="secCategory" class="categoryAction" method="findBycsid">
+				<result name="findBycsid">/WEB-INF/jsp/secProductList.jsp</result>
+				<!--<result name="findBycsid">/demo.jsp</result>-->
+			</action>
+			<!--购物车======》添加商品-->
+			<action name="saveProduct" class="shopCarAction" method="saveProduct">
+				<result name="saveProduct">/WEB-INF/jsp/car.jsp</result>
+				<!--<result name="findBycsid">/demo.jsp</result>-->
+			</action>
+			<!--购物车======》删除商品-->
+			<action name="removeProduct" class="shopCarAction" method="removeProduct">
+				<result name="removeProduct">/WEB-INF/jsp/car.jsp</result>
+				<!--<result name="findBycsid">/demo.jsp</result>-->
+			</action>
+			<!--购物车======》清空商品-->
+			<action name="clearCar" class="shopCarAction" method="clearCar">
+				<result name="clearCar">/WEB-INF/jsp/car.jsp</result>
+				<!--<result name="findBycsid">/demo.jsp</result>-->
+			</action>
+			<!--购物车======》点击购物车跳转到购物车页面-->
+			<action name="toCar" class="shopCarAction" method="toCar">
+				<result name="toCar">/WEB-INF/jsp/car.jsp</result>
+				<!--<result name="findBycsid">/demo.jsp</result>-->
+			</action>
+
+			<!--======================订单======================-->
+			<!--保存订单-->
+			<action name="saveOrder" class="orderAction" method="saveOrder">
+				<result name="saveOrder">/WEB-INF/jsp/order.jsp</result>
+				<result name="login">/WEB-INF/jsp/login.jsp</result>
+			</action>
+			<!--显示所有订单-->
+			<action name="orderList" class="orderAction" method="orderList">
+				<result name="orderList">/WEB-INF/jsp/orderList.jsp</result>
+			</action>
+			<!--点击订单列表的付款根据oid跳转到对应的订单-->
+			<action name="findByOid" class="orderAction" method="findByOid">
+				<result name="findByOid">/WEB-INF/jsp/order.jsp</result>
+			</action>
+		</package>
+
+
+	  <package name="user" extends="struts-default" namespace="/">
+		  <!--注册-->
+		  <action name="registPage" class="userAction" method="regist">
+			  <result name="regist">/WEB-INF/jsp/regist.jsp</result>
+		  </action>
+		  <!--到登录的页面-->
+		  <action name="loginPage" class="userAction" method="login">
+			  <result name="login">/WEB-INF/jsp/login.jsp</result>
+		  </action>
+		  <!--完成登录-->
+		  <action name="login" class="userAction" method="doLogin">
+			  <result name="index" type="redirectAction">index</result>
+		  </action>
+		  <!--验证用户名是否存在-->
+		  <action name="checkUsername" class="userAction" method="isExist"/>
+		  <!--添加注册用户-->
+		  <action name="regist" class="userAction" method="registAdd">
+			  <result name="success">/WEB-INF/jsp/registSuccess.jsp</result>
+			  <result name="regist">/WEB-INF/jsp/regist.jsp</result>
+		  </action>
+		  <!--退出-->
+		  <action name="invalidate" class="userAction" method="invalidate">
+			  <result name="invalidate" type="redirectAction">index</result>
+		  </action>
+			<!--邮箱链接激活-->
+		  <action name="active" class="userAction" method="active">
+			  <result name="active">/WEB-INF/jsp/active.jsp</result>
+		  </action>
+		  <!--验证码-->
+		  <action name="imageAction" class="imageAction"/>
+	  </package>
+
+	<!--后台-->
+	<package name="admin" extends="struts-default" namespace="/">
+		<!--拦截器栈-->
+		<interceptors>
+			<interceptor name="adminInterceptor" class="edu.cqupt.ssh.admin.Interceptor.AdminInterceptor"/>
+			<interceptor-stack name="myStack">
+				<interceptor-ref name="adminInterceptor" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<!--登录失败全局设置-->
+		<global-results>
+			<result name="loginFail" >/admin/index.jsp</result>
+		</global-results>
+		<!--通配符设置-->
+		<global-allowed-methods>regex:.*</global-allowed-methods>
+
+		<!--后台登录-->
+		<action name="adminUser_login" class="adminAction" method="login">
+			<result name="loginSuccess" type="redirect">/admin/home.jsp</result>
+		</action>
+		<!--==========================后台操作一级分类=======================================-->
+		<!--查找所有一级分类-->
+		<action name="adminCategory_*" class="adminAction" method="{1}">
+			<result name="showCategory" >/admin/category/list.jsp</result>
+			<result name="add" type="redirectAction">adminCategory_findAll</result>
+			<result name="delete" type="redirectAction">adminCategory_findAll</result>
+			<result name="edit">/admin/category/edit.jsp</result>
+			<result name="update" type="redirectAction">adminCategory_findAll</result>
+			<!--登录拦截器栈-->
+			<interceptor-ref name="myStack"/>
+		</action>
+
+		<!--======================后台操作二级分类==========================-->
+		<action name="adminCategorySecond_*" class="adminCategorySecondAction" method="{1}">
+			<result name="findAll">/admin/categorysecond/list.jsp</result>
+			<result name="addPage">/admin/categorysecond/add.jsp</result>
+			<result name="saveSuccess" type="redirectAction">adminCategorySecond_findAll?page=1</result>
+			<result name="deleteSuccess" type="redirectAction">adminCategorySecond_findAll?page=1</result>
+			<result name="deleteSuccess" type="redirectAction">adminCategorySecond_findAll?page=1</result>
+			<result name="editSuccess">/admin/categorysecond/edit.jsp</result>
+			<result name="updateSuccess" type="redirectAction">adminCategorySecond_findAll?page=1</result>
+			<!--登录拦截器栈-->
+			<interceptor-ref name="myStack"/>
+		</action>
+
+		<!--======================后台操作商品==========================-->
+		<action name="adminProduct_*" class="adminProductAction" method="{1}">
+			<result name="findAll">/admin/product/list.jsp</result>
+			<result name="addPageSuccess">/admin/product/add.jsp</result>
+			<result name="saveSuccess" type="redirectAction">adminProduct_findAll.action?page=1</result>
+			<result name="deleteSuccess" type="redirectAction">adminProduct_findAll.action?page=1</result>
+			<result name="editSuccess">/admin/product/edit.jsp</result>
+			<result name="updateSuccess" type="redirectAction">adminProduct_findAll.action?page=1</result>
+			<!--登录拦截器栈-->
+			<interceptor-ref name="myStack"/>
+		</action>
+	</package>
+	</struts>

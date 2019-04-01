@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--
+    !!!!!!!!!!!!!!!
+    独立测试用的配置文件
+    -->
+
+    <!--================spring整合hibernate：数据源，sessionFactory，事务=====================-->
+    <!--数据源-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--正式开搞！c3p0！-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close">
+        <property name="driverClass" value="${jdbc.driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}" />
+        <property name="user" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <!--========来一条华丽的分割线==========-->
+        <!--配置连接池的相关配置参数，自己设值玩，按需-->
+        <property name="minPoolSize" value="2" />
+        <property name="maxPoolSize" value="10" />
+        <property name="initialPoolSize" value="10" />
+    </bean>
+
+        <!--配置sessionFactory-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- hibernate信息 -->
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+            </props>
+        </property>
+        <!-- 映射文件配置信息-->
+        <property name="mappingResources">
+            <list>
+                <value>edu/cqupt/ssh/domain/User.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- hibernate的事务相关 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--=============================创建bean==================================-->
+    <bean id="userDao" class="edu.cqupt.ssh.dao.UserDao">
+        <!--<property name="sessionFactory" ref="sessionFactory"/>-->
+    </bean>
+
+</beans>
+
+
+
+
+
+
+
+
+
+

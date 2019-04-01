@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!--===============================-->
+     <class  name="edu.cqupt.ssh.domain.CategorySecond" table="categorysecond">
+         <!--主键-->
+         <id name="csid" column="csid">
+             <generator class="native"/>
+         </id>
+
+         <!--其他属性-->
+         <property name="csname" column="csname"/>
+
+         <!-- 二级分类与一级分类的关联 -->
+         <many-to-one lazy="false" name="category"  class="edu.cqupt.ssh.domain.Category" column="cid"/>
+
+         <!--一对多:一个二级分类对应多个商品-->
+         <set name="productSet"  lazy="false">
+             <key column="csid"/>
+             <one-to-many class="edu.cqupt.ssh.domain.Product"/>
+         </set>
+     </class>
+    <!--===============================-->
+</hibernate-mapping>

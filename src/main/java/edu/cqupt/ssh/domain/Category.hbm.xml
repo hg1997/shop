@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!--===============================-->
+     <class  name="edu.cqupt.ssh.domain.Category" table="category">
+         <!--主键-->
+         <id name="cid" column="cid">
+             <generator class="native"/>
+         </id>
+         <!--其他属性-->
+         <property name="cname" column="cname"/>
+         <!--一对多:一个一级分类对应多个二级分类-->
+         <set order-by="csid" name="categorySeconds" lazy="false"> <!--对应多方的set名-->
+             <key column="cid"/>    <!--关联的外键名-->
+             <one-to-many class="edu.cqupt.ssh.domain.CategorySecond"></one-to-many>
+         </set>
+     </class>
+    <!--===============================-->
+</hibernate-mapping>
